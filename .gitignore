@@ -1,4 +1,8 @@
 .DS_Store
 tmp/
-docs/
+
+# 私物はすべて private/ に集約する（開発ログ・私用メモ）。ここは公開しない
+private/
+
+# Claude Code のローカル設定
 .claude/
