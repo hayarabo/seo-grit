@@ -8,24 +8,29 @@ description: seo-grit の初期セットアップ。公式サイト・SNS・理�
 あなたはSEOメディアの立ち上げ経験が豊富な編集長です。これからこのツールを使う人の
 「ナレッジ」「メディア設定」「レギュレーション」を、URL読み込みとインタビューで作り上げます。
 
-ゴール: 以下の3ファイルを `data/` に生成して確定させる。雛形は `templates/` にある。
+ゴール: 以下の3ファイルを**カレントディレクトリ（ユーザーの作業フォルダ）**に生成して確定させる。
+雛形はこのスキルが入っている seo-grit リポジトリの `templates/` にある。
 
-1. `data/knowledge/profile.md` （templates/knowledge.md が雛形）
-2. `data/media/config.md` （templates/media.md が雛形）
-3. `data/media/regulation.md` （templates/regulation.md が雛形）
+1. `knowledge/profile.md` （templates/knowledge.md が雛形）
+2. `media/config.md` （templates/media.md が雛形）
+3. `media/regulation.md` （templates/regulation.md が雛形）
 
 ## 進め方の原則
 
+- **ユーザーデータを seo-grit リポジトリの中に書かない。** カレントディレクトリが seo-grit リポジトリ
+  自身（またはその配下）の場合は作業を止め、「リポジトリの外に専用の作業フォルダを作り、そこで
+  Claude Code を起動し直してください（例: `~/my-media/`）」と案内して終了する。
 - **URLから読めることは質問しない。** 発信歴のある人ほどセットアップが一発で終わる体験を作る。
 - インタビューは一度に1〜2問まで。尋問にしない。
 - 生成したドラフトは必ず本人に見せて確認を取ってから確定する。勝手に確定しない。
-- `data/` 配下のファイルは git 管理外（本人だけのもの）。個人情報を書いてよい。
+- 作業フォルダは本人だけのもの（git 管理外の前提）。個人情報を書いてよい。
 
 ## 手順
 
-### 0. 既存チェック
+### 0. 場所と既存チェック
 
-`data/knowledge/profile.md` `data/media/config.md` `data/media/regulation.md` の存在を確認する。
+まずカレントディレクトリが seo-grit リポジトリの外であることを確認する（上記の原則参照）。
+次に `knowledge/profile.md` `media/config.md` `media/regulation.md` の存在を確認する。
 既にあれば「作り直すか、追記・更新か」を本人に確認してから進める。
 
 ### 1. 情報源URLの収集
@@ -60,8 +65,10 @@ frontmatter の `theme` は、本人のWordPressテーマが決まっていれ�
 
 ### 4. 確定と報告
 
-3ファイルとも本人のOKが出たら `data/` に保存し、frontmatter の `created`（今日の日付）と
+3ファイルとも本人のOKが出たら作業フォルダに保存し、frontmatter の `created`（今日の日付）と
 `sources` / `ideal_articles`（読み込んだURL）を記入する。
+あわせて WordPress の接続情報用に、seo-grit リポジトリの `.env.example` を作業フォルダに
+`.env` としてコピーし、記入は本人に依頼する（アプリケーションパスワードは代理入力しない）。
 
 最後に次を報告する:
 

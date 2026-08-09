@@ -10,12 +10,16 @@ description: SEO記事を作成する。キーワードを起点に壁打ちで�
 
 ## 前提の読み込み
 
+記事データはすべて**カレントディレクトリ（ユーザーの作業フォルダ）**で読み書きする。
+カレントディレクトリが seo-grit リポジトリ自身（またはその配下）の場合は作業を止め、
+「リポジトリの外の作業フォルダで Claude Code を起動し直してください」と案内して終了する。
+
 開始時に必ず次を読む。存在しなければ「先に `/grit-setup` を実行してください」と案内して終了する。
 
-- `data/knowledge/profile.md` — 書き手のナレッジ（一次情報の源泉）
-- `data/media/config.md` — メディアの立ち位置・想定読者・コンセプト
-- `data/media/regulation.md` — 表記・トンマナ + デザインレギュレーション
-- `data/knowledge/stock/` — 過去の壁打ちで蓄積した一次情報（あれば）
+- `knowledge/profile.md` — 書き手のナレッジ（一次情報の源泉）
+- `media/config.md` — メディアの立ち位置・想定読者・コンセプト
+- `media/regulation.md` — 表記・トンマナ + デザインレギュレーション
+- `knowledge/stock/` — 過去の壁打ちで蓄積した一次情報（あれば）
 
 ## 手順
 
@@ -40,7 +44,7 @@ description: SEO記事を作成する。キーワードを起点に壁打ちで�
 - ナレッジや stock に既にある情報は聞き直さず、「これを使いますね」と確認だけする。
 - 十分な一次情報が集まったと判断したら、集まった材料を箇条書きで見せて壁打ちを締める。
 
-**壁打ちの副産物を保存する**: 出てきた一次情報を `data/knowledge/stock/YYYY-MM-DD-<slug>.md` に保存する
+**壁打ちの副産物を保存する**: 出てきた一次情報を `knowledge/stock/YYYY-MM-DD-<slug>.md` に保存する
 （frontmatter: `keyword`, `used_in`。将来の記事でも引けるように）。
 
 ### 3. 構成案 → 本人のOK
@@ -50,7 +54,7 @@ description: SEO記事を作成する。キーワードを起点に壁打ちで�
 
 ### 4. 執筆
 
-構成案に沿って本文を書き、`data/articles/<slug>/draft.md` に保存する。
+構成案に沿って本文を書き、`articles/<slug>/draft.md` に保存する。
 
 - 壁打ちで得た一次情報を主役にする。一般論だけの段落を作らない。
 - regulation.md の表記ルール・トンマナに最初から従う。
@@ -66,17 +70,18 @@ draft.md を regulation.md と突き合わせて自己チェックし、結果�
 ### 6. WordPressコーディング
 
 regulation.md のブロックマッピング表を使って、draft.md を Gutenberg ブロックマークアップ
-（`<!-- wp:paragraph -->` 形式）に変換し、`data/articles/<slug>/post.html` に保存する。
+（`<!-- wp:paragraph -->` 形式）に変換し、`articles/<slug>/post.html` に保存する。
 
 - ブロックマッピング表が未記入（テーマ未確定）の場合は、コアブロック（paragraph / heading /
   list / table / quote）のみで変換し、テーマ固有の装飾は TODO コメントで残す。
 
 ### 7. 入稿と報告
 
-`.env` が設定されていれば `scripts/wp-post.sh` で下書き入稿する:
+作業フォルダに `.env` が設定されていれば、seo-grit リポジトリの `scripts/wp-post.sh` で
+下書き入稿する（スクリプトはカレントディレクトリの `.env` と相対パスを使う）:
 
 ```
-scripts/wp-post.sh "タイトル" data/articles/<slug>/post.html
+<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html
 ```
 
 成功したら**編集ページのURLを本人に共有して報告**する。

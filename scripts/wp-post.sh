@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # WordPress REST API で記事を下書き入稿し、編集ページの URL を表示する
-# 使い方: scripts/wp-post.sh "記事タイトル" data/articles/<slug>/post.html [status]
-#   status は省略時 draft。認証情報は .env（.env.example 参照）から読む。
+# 使い方: ユーザーの作業フォルダから <seo-grit>/scripts/wp-post.sh "記事タイトル" articles/<slug>/post.html [status]
+#   status は省略時 draft。認証情報はカレントディレクトリ（作業フォルダ）の .env から読む。
 set -euo pipefail
 
 if [ $# -lt 2 ]; then
@@ -9,11 +9,9 @@ if [ $# -lt 2 ]; then
   exit 1
 fi
 
-# リポジトリルートで実行する（.env と相対パスの基準）
-cd "$(dirname "$0")/.."
-
+# カレントディレクトリ = ユーザーの作業フォルダが .env と相対パスの基準
 if [ ! -f .env ]; then
-  echo ".env がありません。cp .env.example .env で作成して接続情報を記入してください。" >&2
+  echo "カレントディレクトリに .env がありません。作業フォルダで実行し、seo-grit の .env.example を参考に作成してください。" >&2
   exit 1
 fi
 set -a

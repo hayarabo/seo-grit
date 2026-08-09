@@ -7,8 +7,7 @@ private/
 # Claude Code のローカル設定
 .claude/
 
-# ユーザーデータ（ナレッジ・メディア設定・記事）。テンプレートは templates/ で公開する
+# ユーザーデータはリポジトリの外の作業フォルダに置く方針（docs/architecture.md）。
+# 以下は万一リポジトリ内に作られた場合の保険
 data/
-
-# WordPress の URL・アプリケーションパスワードなどの認証情報
 .env

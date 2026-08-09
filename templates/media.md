@@ -9,7 +9,7 @@ wp_api: # WordPress REST API のエンドポイント（例: https://example.com
 
 <!--
 このファイルは /grit-setup が生成します。記事の方向性がブレないための土台です。
-実際のファイルは data/media/config.md に置かれ、git には公開されません。
+実際のファイルはユーザーの作業フォルダ（seo-grit リポジトリの外）の media/config.md に置かれます。
 ※ WordPress のアプリケーションパスワードはこのファイルではなく .env に保存します。
 -->
 
