@@ -15,14 +15,23 @@ docs/        設計資料（決定事項のみ）
 
 このリポジトリに入るのは**仕組みだけ**です。ユーザーデータ（ナレッジ・トンマナ・WP 接続情報・記事）は、ユーザー自身の**作業フォルダ**（このリポジトリの外）に生成され、リポジトリには一切入りません。
 
-## 使い方（フェーズ1・開発中）
+## 前提条件
+
+- WordPress サイトを持っていること（WP 5.6+。サイト構築自体は seo-grit のスコープ外です）
+- [Claude Code](https://claude.com/claude-code) が使えること
+
+## セットアップ（フェーズ1・開発中）
 
 ```
-mkdir ~/my-media && cd ~/my-media   # 作業フォルダを作って移動（場所と名前は自由）
-claude                              # そこで Claude Code を起動
+git clone https://github.com/hayarabo/seo-grit.git && seo-grit/scripts/install.sh
 ```
 
-1. `/grit-setup` — 公式サイト・SNS の URL からナレッジ・メディア設定・レギュレーションを生成
-2. `/grit-write <キーワード>` — 壁打ち → 構成案 → 執筆 → WordPress 下書き入稿
+スキルが Claude Code に登録されます。あとは作業フォルダを作って始めるだけ:
 
-WordPress 入稿には、作業フォルダに `.env`（[.env.example](.env.example) 参照）が必要です。
+```
+mkdir -p ~/my-media && cd ~/my-media   # 作業フォルダ（場所と名前は自由）
+claude                                 # そこで Claude Code を起動
+```
+
+1. `/grit-setup` — 公式サイト・SNS の読み込み → ナレッジ・メディア設定・レギュレーション生成 → WordPress 接続テストまで一気通貫のオンボーディング
+2. `/grit-write <キーワード>` — 壁打ち → 構成案 → 執筆 → デザイン付与 → WordPress 下書き入稿

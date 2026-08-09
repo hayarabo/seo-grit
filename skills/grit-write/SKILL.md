@@ -72,8 +72,10 @@ draft.md を regulation.md と突き合わせて自己チェックし、結果�
 regulation.md のブロックマッピング表を使って、draft.md を Gutenberg ブロックマークアップ
 （`<!-- wp:paragraph -->` 形式）に変換し、`articles/<slug>/post.html` に保存する。
 
-- ブロックマッピング表が未記入（テーマ未確定）の場合は、コアブロック（paragraph / heading /
-  list / table / quote）のみで変換し、テーマ固有の装飾は TODO コメントで残す。
+- テーマ固有ブロックはブロックマッピング表にあるものを優先する。
+- マッピング表にない装飾（吹き出し・ボックス等）は、seo-grit リポジトリの
+  `templates/design-blocks.md`（どのテーマでも崩れない標準デザイン部品集）で補完する。
+  TODO コメントで放置せず、デザイン付きの完成記事として仕上げる。
 
 ### 7. 入稿と報告
 
