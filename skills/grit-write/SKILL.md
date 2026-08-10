@@ -56,6 +56,13 @@ description: SEO記事を作成する。キーワードを起点に壁打ちで�
 
 構成案に沿って本文を書き、`articles/<slug>/draft.md` に保存する。
 
+- **スラッグを決める**（フォルダ名 `articles/<slug>` と URL スラッグは同一にする）:
+  - 既存記事のスラッグに明確な慣習があればそれに合わせる（サイトの `wp-json/wp/v2/posts` で確認できる。
+    日本語タイトルがそのままスラッグ化された記事は慣習とみなさない）。
+  - 慣習がなければ SEO の一般則: **英語の単語2〜3語・小文字・ハイフン区切り**（例: `wordpress-permalink`）。
+    ローマ字綴りより英単語を優先し、`-recommend-rule` のような冗長な語尾を付けない。
+- **meta description を書く**: 検索結果に出る想定で80〜120文字。キーワードを自然に含め、
+  記事の一次情報（独自性）が伝わる一文にする。draft.md の frontmatter に `slug` と `description` を記録する。
 - 壁打ちで得た一次情報を主役にする。一般論だけの段落を作らない。
 - regulation.md の表記ルール・トンマナに最初から従う。
 
@@ -83,8 +90,13 @@ regulation.md のブロックマッピング表を使って、draft.md を Guten
 下書き入稿する（スクリプトはカレントディレクトリの `.env` と相対パスを使う）:
 
 ```
-<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html
+<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html \
+  --slug "<slug>" --excerpt "<meta description>"
 ```
+
+`--slug` と `--excerpt` は必ず付ける（frontmatter の `slug` / `description` をそのまま渡す）。
+excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）やテーマが meta description として
+出力していない場合は、その旨を本人に一言添える（表示側の対応はサイト側の作業）。
 
 成功したら**編集ページのURLを本人に共有して報告**する。
 `.env` が未設定なら、draft.md と post.html のパスを報告して「WP環境ができたら入稿できます」と案内する。
