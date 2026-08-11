@@ -6,8 +6,10 @@
 
 背景の解決順（デフォルトで動き、後から差し替えられる）:
   1. --bg で指定した画像
-  2. 作業フォルダの media/eyecatch-bg.png（サイト別の共有背景。置くだけで全記事に効く）
-  3. 内蔵の標準背景を自動生成
+  2. 作業フォルダの media/eyecatch-bg.png または media/eyecatch-bg.svg（サイト別の共有背景）
+  3. seo-grit 同梱のデフォルト背景（templates/eyecatch-bg.svg）
+     初回使用時に media/eyecatch-bg.svg へ複製するので、以降は
+     「背景を変えたい」という指示でこのファイルを編集すれば全記事に反映される
 
 タイトルは「｜」で行を分け、長い行は自動で折り返し・フォントサイズ調整する。
 --post <ID> を付けると WordPress にアップロードして、その記事のアイキャッチに設定する
@@ -177,10 +179,24 @@ def main():
     args = ap.parse_args()
 
     bg = args.bg
-    if not bg and Path("media/eyecatch-bg.png").exists():
-        bg = "media/eyecatch-bg.png"
     if bg and not Path(bg).exists():
         raise SystemExit(f"背景画像が見つかりません: {bg}")
+    if not bg:
+        for cand in ("media/eyecatch-bg.png", "media/eyecatch-bg.svg"):
+            if Path(cand).exists():
+                bg = cand
+                break
+    if not bg:
+        default_svg = Path(__file__).resolve().parent.parent / "templates" / "eyecatch-bg.svg"
+        if default_svg.exists():
+            # 同梱デフォルトを作業フォルダへ複製して使う（以降はユーザーが編集できる）
+            local = Path("media/eyecatch-bg.svg")
+            if Path("media").is_dir() and not local.exists():
+                local.write_text(default_svg.read_text(encoding="utf-8"), encoding="utf-8")
+                print(f"デフォルト背景を {local} に複製しました（編集すれば全記事に反映されます）")
+                bg = str(local)
+            else:
+                bg = str(default_svg)
 
     svg = build_svg(args.title, bg, args.color, args.halo, args.font)
     render_png(svg, args.output)
