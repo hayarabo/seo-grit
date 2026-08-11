@@ -79,10 +79,28 @@ draft.md を regulation.md と突き合わせて自己チェックし、結果�
 regulation.md のブロックマッピング表を使って、draft.md を Gutenberg ブロックマークアップ
 （`<!-- wp:paragraph -->` 形式）に変換し、`articles/<slug>/post.html` に保存する。
 
+- **必ず分割して書き出す。記事全体を1回の出力で書かない。**
+  リード＋目次を最初に書き、その後は H2 セクション2〜3個ずつ post.html に追記していく
+  （Bash の `cat >> ... <<'HTMLEOF'` 追記が確実）。長い一発出力は途中で接続が切れると
+  全損し、作業が空回りする原因になる。
+- 「変換します」と宣言したターンでは、**同じターン内で必ず最初の書き出しまで実行する**。
+  宣言だけしてターンを終えない。
 - テーマ固有ブロックはブロックマッピング表にあるものを優先する。
 - マッピング表にない装飾（吹き出し・ボックス等）は、seo-grit リポジトリの
   `templates/design-blocks.md`（どのテーマでも崩れない標準デザイン部品集）で補完する。
   TODO コメントで放置せず、デザイン付きの完成記事として仕上げる。
+- 書き終えたら入稿前に機械チェックを1回走らせる（ブロックコメントの開閉一致・
+  目次アンカーと見出し id の対応）。例:
+
+```bash
+python3 -c "
+import re, sys
+from collections import Counter
+s = open('articles/<slug>/post.html', encoding='utf-8').read()
+o = Counter(re.findall(r'<!-- wp:(\w+)', s)); c = Counter(re.findall(r'<!-- /wp:(\w+)', s))
+sys.exit(0 if o == c else print('ブロック開閉が不一致:', o - c, c - o) or 1)
+"
+```
 
 ### 7. 入稿と報告
 
