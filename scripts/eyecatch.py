@@ -148,17 +148,22 @@ def wp_set_featured(png_path, post_id, alt):
     url = env["WP_URL"].rstrip("/")
     token = base64.b64encode(f"{env['WP_USER']}:{env['WP_APP_PASSWORD']}".encode()).decode()
 
-    def api(path, data, ctype, extra=None):
-        req = urllib.request.Request(f"{url}/wp-json/wp/v2{path}", data=data, method="POST")
-        req.add_header("Content-Type", ctype)
+    def api(path, data=None, ctype=None, extra=None, method=None):
+        req = urllib.request.Request(f"{url}/wp-json/wp/v2{path}", data=data,
+                                     method=method or ("POST" if data else "GET"))
+        if ctype:
+            req.add_header("Content-Type", ctype)
         req.add_header("Authorization", f"Basic {token}")
         for k, v in (extra or {}).items():
             req.add_header(k, v)
         with urllib.request.urlopen(req) as res:
             return json.load(res)
 
+    # SNS/SEO 用にスラッグ由来の英語ファイル名でアップロードする
+    post_slug = api(f"/posts/{post_id}?context=edit").get("slug") or "post"
+    filename = f"{post_slug}-eyecatch{Path(png_path).suffix.lower()}"
     media = api("/media", Path(png_path).read_bytes(), "image/png",
-                {"Content-Disposition": f'attachment; filename="{Path(png_path).name}"'})
+                {"Content-Disposition": f'attachment; filename="{filename}"'})
     if alt:
         api(f"/media/{media['id']}", json.dumps({"alt_text": alt}).encode(), "application/json")
     api(f"/posts/{post_id}", json.dumps({"featured_media": media["id"]}).encode(), "application/json")

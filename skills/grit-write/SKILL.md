@@ -110,25 +110,29 @@ python3 <seo-gritリポジトリ>/scripts/md2gutenberg.py articles/<slug>/draft.
 作業フォルダに `.env` が設定されていれば、seo-grit リポジトリの `scripts/wp-post.sh` で
 下書き入稿する（スクリプトはカレントディレクトリの `.env` と相対パスを使う）:
 
+まず**アイキャッチを生成して本人に見せる**（タイトルの「｜」が改行位置になる）:
+
+```bash
+python3 <seo-gritリポジトリ>/scripts/eyecatch.py "記事タイトル" -o articles/<slug>/eyecatch.png
+```
+
+OKが出たら `--eyecatch` を付けて入稿する。アップロード名は自動で
+「<スラッグ>-eyecatch.png」（SNSカード・SEO向けの英語ファイル名）になり、
+featured_media の設定と alt（タイトル）まで1コマンドで完了する:
+
 ```
 <seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html \
-  --slug "<slug>" --excerpt "<meta description>"
+  --slug "<slug>" --excerpt "<meta description>" --eyecatch articles/<slug>/eyecatch.png
 ```
 
 `--slug` と `--excerpt` は必ず付ける（frontmatter の `slug` / `description` をそのまま渡す）。
 excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）やテーマが meta description として
 出力していない場合は、その旨を本人に一言添える（表示側の対応はサイト側の作業）。
 
-入稿できたら**アイキャッチを自動生成して設定**する:
-
-```bash
-python3 <seo-gritリポジトリ>/scripts/eyecatch.py "記事タイトル" --post <記事ID>
-```
-
-- 背景は `media/eyecatch-bg.png`（または `.svg`）があればそれを使い、無ければ同梱のデフォルト背景を
-  `media/eyecatch-bg.svg` へ複製して使う。**デフォルトのまま進めてよい**。
+- アイキャッチの背景は `media/eyecatch-bg.png`（または `.svg`）があればそれを使い、無ければ同梱の
+  デフォルト背景を `media/eyecatch-bg.svg` へ複製して使う。**デフォルトのまま進めてよい**。
   本人が「背景を変えたい」と言ったら `media/eyecatch-bg.svg` を指示に沿って編集する（次の生成から全記事に反映）。
-- タイトルの「｜」が改行位置になる。生成後は画像を本人に見せて確認する。
+- 入稿済みの記事に後からアイキャッチだけ設定するときは `eyecatch.py "タイトル" --post <記事ID>` を使う。
 
 成功したら**編集ページのURLを本人に共有して報告**する。
 `.env` が未設定なら、draft.md と post.html のパスを報告して「WP環境ができたら入稿できます」と案内する。
