@@ -119,6 +119,16 @@ python3 <seo-gritリポジトリ>/scripts/md2gutenberg.py articles/<slug>/draft.
 excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）やテーマが meta description として
 出力していない場合は、その旨を本人に一言添える（表示側の対応はサイト側の作業）。
 
+入稿できたら**アイキャッチを自動生成して設定**する:
+
+```bash
+python3 <seo-gritリポジトリ>/scripts/eyecatch.py "記事タイトル" --post <記事ID>
+```
+
+- 背景は `media/eyecatch-bg.png` があればそれを使い、無ければ内蔵の標準背景で生成される
+  （**デフォルトのまま進めてよい**。デザインを変えたくなったら背景画像を置くだけ、と本人に一言添える）。
+- タイトルの「｜」が改行位置になる。生成後は画像を本人に見せて確認する。
+
 成功したら**編集ページのURLを本人に共有して報告**する。
 `.env` が未設定なら、draft.md と post.html のパスを報告して「WP環境ができたら入稿できます」と案内する。
 
