@@ -116,16 +116,27 @@ python3 <seo-gritリポジトリ>/scripts/md2gutenberg.py articles/<slug>/draft.
 python3 <seo-gritリポジトリ>/scripts/eyecatch.py "記事タイトル" -o articles/<slug>/eyecatch.png
 ```
 
+次に**カテゴリを選ぶ**。作業フォルダの `media/categories.json`（カテゴリ台帳）を読み、
+タイトルと記事内容に最も合うカテゴリを選んで**本人に「このカテゴリで入れます」と一言提示**する。
+
+- 台帳が無ければ `wp-post.sh --sync-categories` で生成する（WPから取得。以降はWPに問い合わせない）
+- 合うカテゴリが無ければ、最も近いものを選んだ上で「ぴったりのカテゴリがありません。WP側で
+  追加する場合は追加後に `--sync-categories` を実行してください」と伝える。**カテゴリを勝手に新規作成しない**
+- 何らかの理由でAPI経由でカテゴリを作成・変更した場合は、**同じ作業の中で必ず `--sync-categories` を
+  実行して台帳を一致させる**（台帳とWPのズレを残さない）
+
 OKが出たら `--eyecatch` を付けて入稿する。アップロード名は自動で
 「<スラッグ>-eyecatch.png」（SNSカード・SEO向けの英語ファイル名）になり、
 featured_media の設定と alt（タイトル）まで1コマンドで完了する:
 
 ```
 <seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html \
-  --slug "<slug>" --excerpt "<meta description>" --eyecatch articles/<slug>/eyecatch.png
+  --slug "<slug>" --excerpt "<meta description>" --category "<カテゴリ名>" \
+  --eyecatch articles/<slug>/eyecatch.png
 ```
 
 `--slug` と `--excerpt` は必ず付ける（frontmatter の `slug` / `description` をそのまま渡す）。
+`--category` はカンマ区切りで複数指定できる（名前は台帳でIDに解決される）。
 excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）やテーマが meta description として
 出力していない場合は、その旨を本人に一言添える（表示側の対応はサイト側の作業）。
 
@@ -138,3 +149,19 @@ excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）や�
 `.env` が未設定なら、draft.md と post.html のパスを報告して「WP環境ができたら入稿できます」と案内する。
 
 最後に、今回の記事で使った一次情報の stock 保存が済んでいるか確認して締める。
+
+## 公開後の記事を修正するとき（重要）
+
+公開後は**WordPress側が正本**（本人が管理画面で手直しするのが通常フロー）。
+ローカルの draft.md / post.html は初稿の記録にすぎず、公開後の実体とはズレている前提で扱う。
+
+修正依頼（目次の同期・誤字修正・パーツ追加など）が来たら、**必ず pull → 編集 → 書き戻し**の順で行う:
+
+```bash
+<seo-gritリポジトリ>/scripts/wp-post.sh --pull <記事ID>   # WPの現在の本文を articles/<slug>/post.html に取得
+# → 取得した post.html に修正を加える
+<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html publish --update <記事ID>
+```
+
+**禁止**: pull せずにローカルの古い原稿から `--update` を実行すること。
+本人がWP側で行った手直しがすべて消える。将来のリライト機能もこの pull を入口にする。
