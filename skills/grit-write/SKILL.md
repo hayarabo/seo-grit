@@ -158,10 +158,15 @@ excerpt は WP の「抜粋」に入る。SEOプラグイン（Yoast 等）や�
 修正依頼（目次の同期・誤字修正・パーツ追加など）が来たら、**必ず pull → 編集 → 書き戻し**の順で行う:
 
 ```bash
-<seo-gritリポジトリ>/scripts/wp-post.sh --pull <記事ID>   # WPの現在の本文を articles/<slug>/post.html に取得
+<seo-gritリポジトリ>/scripts/wp-post.sh --pull <記事ID>   # WPの現在の本文をローカルに取得（保存先は出力に表示される）
 # → 取得した post.html に修正を加える
-<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" articles/<slug>/post.html publish --update <記事ID>
+<seo-gritリポジトリ>/scripts/wp-post.sh "タイトル" <保存先のpost.html> publish --update <記事ID>
 ```
 
 **禁止**: pull せずにローカルの古い原稿から `--update` を実行すること。
 本人がWP側で行った手直しがすべて消える。将来のリライト機能もこの pull を入口にする。
+
+記事フォルダの `.wp-post.json` はWP記事との対応情報（id / slug / url）。入稿・pull 時に自動生成され、
+フォルダ名とWPスラッグがズレていても pull はこのIDでフォルダを特定する。手で編集・削除しない。
+入稿時に「フォルダ名とスラッグが異なる」警告が出たら、本文中の記事URLリンクがスラッグと
+一致しているかを確認する（リンク切れの典型原因）。

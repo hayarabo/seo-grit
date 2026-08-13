@@ -10,8 +10,13 @@
 #   --category <名前|ID> でカテゴリを設定する（カンマ区切りで複数可）。名前は media/categories.json の
 #   台帳で ID に解決する（台帳が無ければ初回に自動生成）。
 #
+# 入稿・更新の成功時は、本文ファイルと同じフォルダに .wp-post.json（WP記事との対応情報:
+#   id / slug / url）を保存する。ローカルフォルダ名とWPスラッグのズレはこのファイルで吸収する。
+#
 # 単独モード（タイトル・本文ファイル不要）:
-#   --pull <ID>          … WP上の現在の本文を取得して articles/<slug>/post.html に保存する。
+#   --pull <ID>          … WP上の現在の本文を取得してローカルに保存する。保存先はまず
+#                          articles/*/.wp-post.json を ID で探し、対応するフォルダがあればそこ、
+#                          無ければ articles/<WPスラッグ>/post.html（対応情報も同時に生成）。
 #                          公開後の修正は必ずこれで取得した最新版を編集し、--update で書き戻す
 #                          （ローカルの古い原稿からの --update 直行は、WP側の手直しを消すので禁止）。
 #   --sync-categories    … WPのカテゴリ一覧を取得して media/categories.json（台帳）を上書きする。
@@ -79,15 +84,32 @@ if pull_id:
         sys.exit(1)
     slug = post.get("slug") or f"post-{pull_id}"
     raw = post["content"]["raw"]
-    dest_dir = Path("articles") / slug
+    # 保存先はまず対応情報（.wp-post.json）を ID で探す。フォルダ名とWPスラッグが
+    # ズレていても同じフォルダに書き戻し、同一記事のフォルダ二重化を防ぐ
+    dest_dir = None
+    for meta_path in sorted(Path("articles").glob("*/.wp-post.json")):
+        try:
+            meta = json.loads(meta_path.read_text(encoding="utf-8"))
+        except (json.JSONDecodeError, OSError):
+            continue
+        if str(meta.get("id")) == str(pull_id):
+            dest_dir = meta_path.parent
+            break
+    if dest_dir is None:
+        dest_dir = Path("articles") / slug
     dest_dir.mkdir(parents=True, exist_ok=True)
     dest = dest_dir / "post.html"
     if dest.exists():
         dest.replace(dest_dir / "post.html.bak")  # 直前のローカル版は1世代だけ残す
     dest.write_text(raw, encoding="utf-8")
+    (dest_dir / ".wp-post.json").write_text(json.dumps(
+        {"id": int(pull_id), "slug": slug, "url": post.get("link", "")},
+        ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     title = post["title"].get("raw") or post["title"].get("rendered", "")
     print(f"WPの現在の本文を取得しました（ID: {pull_id} / status: {post['status']} / タイトル: {title}）")
     print(f"保存先: {dest}")
+    if dest_dir.name != slug:
+        print(f"注: フォルダ名（{dest_dir.name}）とWPスラッグ（{slug}）は異なりますが、.wp-post.json のID対応で管理しています")
     print(f"このファイルを編集し、書き戻すときは: wp-post.sh \"{title}\" {dest} {post['status']} --update {pull_id}")
 
 if os.environ.get("SYNC_CATS", ""):
@@ -215,6 +237,17 @@ except urllib.error.HTTPError as e:
 post_id = post["id"]
 action = "更新" if update_id else "入稿"
 print(f"{action}しました（status: {status} / ID: {post_id} / slug: {post.get('slug', '')}）")
+
+# WP記事との対応情報を本文ファイルの隣に保存する（--pull がフォルダを ID で特定するために使う）
+final_slug = post.get("slug", "")
+article_dir = Path(file).parent
+if article_dir != Path("."):
+    (article_dir / ".wp-post.json").write_text(json.dumps(
+        {"id": post_id, "slug": final_slug, "url": post.get("link", "")},
+        ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    if final_slug and article_dir.name != final_slug:
+        print(f"注意: フォルダ名（{article_dir.name}）とWPが確定したスラッグ（{final_slug}）が異なります。", file=sys.stderr)
+        print("　　  リンク切れの原因になりやすいので、フォルダ名をスラッグに合わせることを推奨します（対応自体は .wp-post.json で保持済み）。", file=sys.stderr)
 
 # アイキャッチ: スラッグ由来の英語ファイル名でアップロードして featured_media に設定
 eyecatch = os.environ.get("EYECATCH", "")
