@@ -30,11 +30,29 @@ AIに書かせた没個性な量産記事ではなく、あなた（運営者）
 
 - **WordPress サイト**（5.6以上・アプリケーションパスワードが使えること。サイト構築自体はスコープ外です）
 - **[Claude Code](https://claude.com/claude-code)**（有料。このツール自体は無料ですが、Claude の利用料がかかります）
-- ターミナルで `git clone` を実行できること（ここが不安な方は、Claude Code に「このREADMEのセットアップをやって」と頼めば代わりにやってくれます）
+- **[Node.js](https://nodejs.org/ja) 22以上**（①のデータ基盤に必要。無料。入れ方は下記ステップ0）
+- ターミナルで下記のコマンドをコピー＆ペーストして実行できること（ここが不安な方は、Claude Code に「このREADMEのセットアップをやって」と頼めば代わりにやってくれます）
 
 ## セットアップ
 
+コマンドはすべて**ターミナル**（Macなら「ターミナル」アプリ、Windowsなら PowerShell）に貼り付けて Enter で実行します。
+
+### ステップ0：Node.js の確認（①を使う人だけ・約2分）
+
+ターミナルで以下を実行して、Node.js のバージョンを確認します：
+
+```bash
+node -v
+```
+
+`v22.0.0` 以上が表示されればOK、ステップ①へ進んでください。
+**エラーになる／v22未満**の場合は、[Node.js 公式サイト](https://nodejs.org/ja)から LTS版（推奨版）をダウンロードしてインストールし、ターミナルを開き直してからもう一度 `node -v` で確認してください。
+
+> 古い Node.js のまま①を実行すると `ERR_UNKNOWN_BUILTIN_MODULE` などのエラーで止まります。
+
 ### ① データ基盤＋管理画面（約5分・クレジットカード不要）
+
+ターミナルで以下を実行します：
 
 ```bash
 npx create-seo-grit
@@ -42,23 +60,27 @@ npx create-seo-grit
 
 ウィザードが1ステップずつ案内します（Cloudflareログイン → 自動デプロイ → WordPress接続 →
 Google接続の伴走 → 初回データ収集）。途中でやめても再実行で続きから再開します。
-必要なもの: [Cloudflareアカウント](https://dash.cloudflare.com/sign-up)（無料）・Node.js 22+・
+必要なもの: [Cloudflareアカウント](https://dash.cloudflare.com/sign-up)（無料）・Node.js 22+（ステップ0参照）・
 GSC / GA4 のプロパティ所有者である Google アカウント。
 
 完了すると管理画面のURLと、Claude Code との接続コマンド（MCP）が表示されます。
 
-### ② 執筆スキル
+### ② 執筆スキル（約1分）
+
+ターミナルで以下を実行すると、スキルが Claude Code に登録されます：
 
 ```bash
 git clone https://github.com/hayarabo/seo-grit.git && seo-grit/scripts/install.sh
 ```
 
-スキルが Claude Code に登録されます。あとは作業フォルダを作って始めるだけ：
+あとは作業フォルダを作り、そこで Claude Code を起動するだけです。続けてターミナルで：
 
 ```bash
 mkdir -p ~/my-media && cd ~/my-media   # 作業フォルダ（場所と名前は自由）
 claude                                 # そこで Claude Code を起動
 ```
+
+起動した Claude Code の中で、次のコマンドを使います：
 
 1. `/grit-setup` — 初回のみ。質問に答えていけば WordPress 接続まで完了します
 2. `/grit-write 狙いたいキーワード` — 記事作成。キーワード省略時はナレッジから記事案を提案します
