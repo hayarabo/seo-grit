@@ -7,6 +7,10 @@
 **Claude Code の上で動く、SEOメディア運営ツール。**
 一次情報 × AI で「その人にしか書けない記事」を作り、WordPress への入稿・公開後の修正までを自動化します。
 
+### ▶️ [動画で見る：導入から運用まで（YouTube）](https://youtu.be/v1QQStl2FnI)
+
+[![クリックで再生 — SEO Grit 導入解説動画](https://img.youtube.com/vi/v1QQStl2FnI/maxresdefault.jpg)](https://youtu.be/v1QQStl2FnI)
+
 AIに書かせた没個性な量産記事ではなく、あなた（運営者）への壁打ちインタビューで引き出した一次情報・実体験を核に記事を組み立てる、という思想で設計されています。作者自身が自分のメディアをこのツールだけで運営しています（ドッグフーディング）。
 
 ## seo-grit は2つの部品でできています
